@@ -48,6 +48,35 @@ def getUserByKw(kw):
     return user_list
 
 
+def getUserByName(username):
+    cursor, conn = connect_mq()
+    sql = f"select * from user where username='{username}';"
+    util.commitDB(conn=conn, cursor=cursor, sql=sql, isRB=False)
+    for i in cursor.fetchall():
+        return User(i[0], i[1], i[2], i[3])
+
+
+def getIdByToken(token):
+    conn = connect_rd()
+    for key in conn.scan_iter(count=100):
+        if conn.get(key) == token:
+            return key
+
+
+def getRoleById(uid):
+    cursor, conn = connect_mq()
+    sql = f"select role from user where uid='{uid}';"
+    util.commitDB(conn=conn, cursor=cursor, sql=sql, isRB=False)
+    for i in cursor.fetchall():
+        return User(i[0], i[1], i[2], i[3])
+
+
+def addAdmin(username, password, role="admin"):
+    cursor, conn = connect_mq()
+    sql = f"insert into user (username,password,role) values ('{username}','{password}','{role}')"
+    util.commitDB(conn=conn, cursor=cursor, sql=sql)
+
+
 def delUserById(uid: int):
     cursor, conn = connect_mq()
     sql = f"delete from user where uid='{uid}'"
@@ -67,3 +96,12 @@ def delToken(uid):
     conn.delete(uid)
     conn.close()
 
+
+def getAllToken():
+    token_list = []
+    conn = connect_rd()
+    keys = conn.keys('*')
+    for i in keys:
+        token_list.append({i.decode(): conn.get(i).decode()})
+    conn.close()
+    return token_list

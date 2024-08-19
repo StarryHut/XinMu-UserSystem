@@ -1,4 +1,5 @@
 from dotenv import load_dotenv
+import hashlib
 
 load_dotenv()
 
@@ -16,3 +17,10 @@ def commitDB(conn, cursor, sql, isRB=True):
     finally:
         cursor.close()
         conn.close()
+
+
+def createToken(info: str) -> str:
+    sha256 = hashlib.sha256()
+    sha256.update(info.encode())
+    hex_digest = sha256.hexdigest()
+    return hex_digest

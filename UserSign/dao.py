@@ -28,7 +28,7 @@ def connect_rd():
     )
 
 
-def addUser(username, password, role):
+def addUser(username, password, role="user"):
     cursor, conn = connect_mq()
     sql = f"insert into user (username,password,role) values ('{username}','{password}','{role}')"
     util.commitDB(conn=conn, cursor=cursor, sql=sql)
@@ -44,5 +44,5 @@ def getUserByName(username):
 
 def setToken(uid, token):
     conn = connect_rd()
-    conn.set(uid, token)
+    conn.setex(uid, 5, token)
     conn.close()

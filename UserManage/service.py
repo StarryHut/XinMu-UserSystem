@@ -1,4 +1,5 @@
 import dao
+import util
 
 
 def getAllUser():
@@ -13,6 +14,29 @@ def getUserByKw(kw):
     if user is None:
         return {"msg": "暂无匹配用户"}
     return [i.__dict__ for i in user]
+
+
+def getIdByToken(token):
+    return dao.getIdByToken(token)
+
+
+def getRoleById(uid):
+    user = dao.getRoleById(uid)
+    return [i.__dict__ for i in user]
+
+
+def getAllToken():
+    token = dao.getAllToken()
+    if token is []:
+        return {"msg": "暂无用户"}
+    return token
+
+
+def addAdmin(username, password, role):
+    dao.addAdmin(username, password, role)
+    user = dao.getUserByName(username)
+    conn = dao.connect_rd()
+    conn.set(user.uid, util.createToken(user.username + user.password + user.role))
 
 
 def delUserById(uid: int):
