@@ -48,24 +48,9 @@ def getUserByKw(kw):
     return user_list
 
 
-def getUserByName(username):
+def getUserByInfo(**info):
     cursor, conn = connect_mq()
-    sql = f"select * from user where username='{username}';"
-    util.commitDB(conn=conn, cursor=cursor, sql=sql, isRB=False)
-    for i in cursor.fetchall():
-        return User(i[0], i[1], i[2], i[3])
-
-
-def getIdByToken(token):
-    conn = connect_rd()
-    for key in conn.scan_iter(count=100):
-        if conn.get(key) == token:
-            return key
-
-
-def getRoleById(uid):
-    cursor, conn = connect_mq()
-    sql = f"select role from user where uid='{uid}';"
+    sql = f"select role from user where {list(info)[0]}='{info.get(list(info)[0])}';"
     util.commitDB(conn=conn, cursor=cursor, sql=sql, isRB=False)
     for i in cursor.fetchall():
         return User(i[0], i[1], i[2], i[3])
@@ -89,6 +74,13 @@ def updateUserById(uid: int, username, password, role):
     sql = f"update user set username='{user.username}', password='{user.password}', role='{user.role}' " \
           f"where uid={user.uid}"
     util.commitDB(conn=conn, cursor=cursor, sql=sql)
+
+
+def getIdByToken(token):
+    conn = connect_rd()
+    for key in conn.scan_iter(count=100):
+        if conn.get(key) == token:
+            return key
 
 
 def delToken(uid):

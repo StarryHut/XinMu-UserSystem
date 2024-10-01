@@ -21,8 +21,7 @@ def getIdByToken(token):
 
 
 def getRoleById(uid):
-    user = dao.getRoleById(uid)
-    return [i.__dict__ for i in user]
+    return dao.getUserByInfo(uid=uid).role
 
 
 def getAllToken():
@@ -34,7 +33,7 @@ def getAllToken():
 
 def addAdmin(username, password, role):
     dao.addAdmin(username, password, role)
-    user = dao.getUserByName(username)
+    user = dao.getUserByInfo(username=username)
     conn = dao.connect_rd()
     conn.set(user.uid, util.createToken(user.username + user.password + user.role))
 
